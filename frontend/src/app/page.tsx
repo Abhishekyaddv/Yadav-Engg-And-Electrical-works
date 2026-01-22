@@ -1,6 +1,7 @@
 import CoilCalculator from '../../components/CoilCalculator';
-import ClientCarousel from '../../components/ClientCarousel';  // <-- Import 1
+import ClientCarousel from '../../components/ClientCarousel';
 import FounderSection from '../../components/FounderSection';
+import HeroBackground from '../../components/HeroBackground'; // <--- NEW IMPORT
 import { ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 
 export default function Home() {
@@ -8,12 +9,13 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950 selection:bg-blue-500/30">
       
       {/* 1. HERO SECTION */}
-      <section className="relative pt-24 pb-32 overflow-hidden">
-        {/* Background Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-10"></div>
+      <section className="relative pt-32 pb-32 overflow-hidden">
         
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-800 text-blue-400 text-sm font-medium mb-6">
+        {/* <--- ADD THE BACKGROUND HERE ---> */}
+        <HeroBackground />
+        
+        <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-800 text-blue-400 text-sm font-medium mb-6 backdrop-blur-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
@@ -21,7 +23,7 @@ export default function Home() {
             Available for Delhi NCR & Pan-India
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-6">
+          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-6 drop-shadow-2xl">
             Precision Engineering <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
               Simplified.
@@ -34,21 +36,21 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#calculator" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-950 rounded-full font-bold hover:bg-slate-200 transition-colors">
+            <a href="#calculator" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-950 rounded-full font-bold hover:bg-blue-50 transition-colors shadow-lg shadow-blue-900/20">
               Get Instant Quote <ArrowRight size={20} />
             </a>
-            <button className="px-8 py-4 rounded-full border border-slate-700 text-white font-medium hover:bg-slate-900 transition-colors">
+            <button className="px-8 py-4 rounded-full border border-slate-700 text-white font-medium hover:bg-slate-800/50 backdrop-blur-sm transition-colors">
               View Our Services
             </button>
           </div>
         </div>
       </section>
 
-      {/* 2. CLIENT CAROUSEL (NEW) */}
+      {/* 2. CLIENT CAROUSEL */}
       <ClientCarousel />
 
-      {/* 2. SERVICES GRID */}
-      <section className="py-20 bg-slate-900/50 border-y border-slate-900">
+      {/* 3. SERVICES GRID */}
+      <section id="services" className="py-20 bg-slate-900/50 border-y border-slate-900">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -68,10 +70,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. FOUNDER SECTION (NEW) */}
-      <FounderSection />      
+      {/* 4. FOUNDER SECTION */}
+      <FounderSection />
 
-      {/* 3. CALCULATOR SECTION */}
+      {/* 5. CALCULATOR SECTION */}
       <section id="calculator" className="py-24 relative">
         <div className="max-w-6xl mx-auto px-6">
           <div className="mb-12 md:text-center">
@@ -79,7 +81,6 @@ export default function Home() {
             <p className="text-slate-400">Calculate your repair costs instantly based on industry standard rates.</p>
           </div>
           
-          {/* THE CALCULATOR COMPONENT */}
           <CoilCalculator />
 
           <div className="mt-12 flex flex-wrap justify-center gap-6 text-slate-500 text-sm">
@@ -94,10 +95,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. FOOTER */}
-      {/* <footer className="py-12 border-t border-slate-900 text-center text-slate-600">
-        <p>&copy; 2026 Engineering Solutions. All rights reserved.</p>
-      </footer> */}
     </main>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Settings, Wrench, AlertCircle } from 'lucide-react';
+import { Settings, Wrench, AlertCircle, ChevronDown, Check } from 'lucide-react';
 
 export default function CoilCalculator() {
   const [formData, setFormData] = useState({
@@ -11,11 +11,11 @@ export default function CoilCalculator() {
     travelCharge: 0
   });
 
-  // REMOVED TYPES HERE to fix the crash
   const [availableSizes, setAvailableSizes] = useState([]);
   const [allCoils, setAllCoils] = useState([]); 
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // 1. FETCH INVENTORY ON LOAD
   useEffect(() => {
@@ -35,14 +35,13 @@ export default function CoilCalculator() {
   useEffect(() => {
     if (allCoils.length === 0) return;
 
-    // REMOVED TYPES HERE to fix the crash
     const filteredSizes = allCoils
       .filter((item) => item.type === formData.coilType)
       .map((item) => item.size);
 
     setAvailableSizes(filteredSizes);
 
-    // Auto-select the first size if the current one isn't valid
+    // Auto-select first option if current is invalid
     if (!filteredSizes.includes(formData.size)) {
       setFormData(prev => ({ ...prev, size: filteredSizes[0] || '' }));
     }
@@ -88,9 +87,11 @@ export default function CoilCalculator() {
       <div className="grid lg:grid-cols-2 gap-0">
         {/* COLUMN 1: CONTROLS */}
         <div className="p-8 space-y-8">
+          
+          {/* 1. COMPONENT CONDITION TOGGLE */}
           <div>
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 block">Component Condition</label>
-            <div className="grid grid-cols-2 gap-4 p-1 bg-slate-800 rounded-xl">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Component Condition</label>
+            <div className="grid grid-cols-2 gap-4 p-1 bg-slate-800 rounded-xl border border-slate-700/50">
               {['New', 'Recoil'].map((type) => (
                 <button
                   key={type}
@@ -98,7 +99,7 @@ export default function CoilCalculator() {
                   className={`py-3 rounded-lg text-sm font-bold transition-all ${
                     formData.coilType === type 
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' 
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                   }`}
                 >
                   {type}
@@ -107,105 +108,142 @@ export default function CoilCalculator() {
             </div>
           </div>
 
-          <div>
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 block">Thread Specification</label>
-            <div className="relative">
-              <select 
-                className="w-full appearance-none bg-slate-800 border border-slate-700 text-white p-4 rounded-xl outline-none focus:border-blue-500 transition-colors"
-                onChange={(e) => setFormData({...formData, size: e.target.value})}
-                value={formData.size}
-              >
-                {availableSizes.length > 0 ? (
-                  availableSizes.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))
-                ) : (
-                  <option>Loading sizes...</option>
-                )}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">▼</div>
-            </div>
+          {/* 2. APPLE-STYLE DROPDOWN (Modern Glass UI) */}
+          <div className="relative z-20">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Thread Specification</label>
+            
+            {/* Trigger Button */}
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`w-full flex items-center justify-between p-4 rounded-xl outline-none transition-all duration-200 ease-out group 
+                ${isDropdownOpen 
+                  ? 'bg-slate-800 ring-2 ring-blue-500/30 border-blue-500/50' 
+                  : 'bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700/60 hover:border-slate-600 shadow-sm active:scale-[0.98]'
+                }`}
+            >
+              <span className={`font-mono text-lg ${!formData.size ? 'text-slate-500' : 'text-white'}`}>
+                {formData.size || "Select Size"}
+              </span>
+              <div className={`p-1 rounded-full transition-all duration-300 ${isDropdownOpen ? 'bg-blue-500 text-white rotate-180' : 'bg-slate-800 text-slate-400'}`}>
+                <ChevronDown size={16} strokeWidth={3} />
+              </div>
+            </button>
+
+            {/* Floating Glass Menu */}
+            {isDropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-10 cursor-default" onClick={() => setIsDropdownOpen(false)}></div>
+                
+                <div className="absolute top-full left-0 right-0 mt-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden p-1 animate-in fade-in zoom-in-95 duration-100 origin-top">
+                  <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                    {availableSizes.length > 0 ? (
+                      availableSizes.map((s) => (
+                        <button 
+                          key={s}
+                          onClick={() => {
+                            setFormData({ ...formData, size: s });
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left p-3 rounded-lg mb-0.5 flex items-center justify-between transition-colors duration-150
+                            ${formData.size === s 
+                              ? 'bg-blue-600 text-white shadow-md' 
+                              : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                          <span className="font-mono font-medium pl-2">{s}</span>
+                          {formData.size === s && <Check size={16} strokeWidth={3} className="mr-2" />}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="p-4 text-slate-500 text-center text-sm font-medium">No sizes available</div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+            
             {availableSizes.length === 0 && allCoils.length > 0 && (
-                <p className="text-red-400 text-xs mt-2">No sizes found for {formData.coilType} condition.</p>
+                <p className="text-red-400 text-xs mt-2 pl-1 font-medium flex items-center gap-1">
+                  <AlertCircle size={12} /> Unavailable for {formData.coilType}
+                </p>
             )}
           </div>
 
+          {/* 3. QUANTITY INPUT (Fixed Limit & Empty State) */}
           <div>
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 block">Quantity (Holes)</label>
-            <div className="relative">
-               <input 
-  type="number" 
-  min="1"
-  max="1000"
-  value={formData.numHoles}
-  onChange={(e) => {
-    const val = e.target.value;
-
-    // 1. Handle Empty Field (Fixes the "starting from zero" issue)
-    if (val === "") {
-      setFormData({ ...formData, numHoles: "" });
-      return;
-    }
-
-    // 2. Parse the number
-    let num = parseInt(val);
-
-    // 3. Enforce Max Limit (Fixes the "limit 1000" issue)
-    if (num > 1000) num = 1000;
-    
-    // 4. Update State
-    setFormData({ ...formData, numHoles: num });
-  }}
-  className="w-full bg-slate-800 border border-slate-700 text-white p-4 rounded-xl outline-none focus:border-blue-500 transition-colors font-mono text-lg"
-/>
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-bold">UNITS</span>
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 block">Quantity (Holes)</label>
+            <div className="relative group">
+                <input 
+                  type="number" 
+                  min="1"
+                  max="1000"
+                  value={formData.numHoles}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Handle empty string to avoid "0" sticking
+                    if (val === "") {
+                      setFormData({ ...formData, numHoles: "" });
+                      return;
+                    }
+                    // Parse and enforce limit
+                    let num = parseInt(val);
+                    if (num > 1000) num = 1000;
+                    
+                    setFormData({ ...formData, numHoles: num });
+                  }}
+                  className="w-full bg-slate-800 border border-slate-700 text-white p-4 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all font-mono text-lg placeholder:text-slate-600"
+                  placeholder="0"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold bg-slate-800 pl-2 group-focus-within:text-blue-500">UNITS</span>
             </div>
           </div>
         </div>
 
         {/* COLUMN 2: LIVE BREAKDOWN */}
-        <div className="bg-gradient-to-br from-slate-950 to-slate-900 p-8 border-l border-slate-800 relative flex flex-col justify-between min-h-[400px]">
+        <div className="bg-gradient-to-br from-slate-950 to-slate-900 p-8 border-l border-slate-800 relative flex flex-col justify-between min-h-[450px]">
           
-          <div className="absolute top-0 right-0 p-6 opacity-5">
+          <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
               <Wrench size={120} />
           </div>
           
           {error ? (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-                <AlertCircle className="text-red-500 w-12 h-12 mb-2" />
-                <h3 className="text-red-400 font-bold text-lg">Configuration Not Found</h3>
+                <div className="bg-red-500/10 p-4 rounded-full">
+                   <AlertCircle className="text-red-500 w-8 h-8" />
+                </div>
+                <h3 className="text-white font-bold text-lg">Size Unavailable</h3>
                 <p className="text-slate-500 text-sm max-w-xs">
-                    The size <strong>{formData.size}</strong> is not available in the database for {formData.coilType} components.
+                    The size <strong>{formData.size}</strong> is not currently in the database for {formData.coilType} items.
                 </p>
             </div>
           ) : result && result.calculation ? (
             <>
-                <div>
-                    <h3 className="text-blue-500 text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                <div className="relative z-10">
+                    <h3 className="text-blue-500 text-[10px] font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
                         Live Quote Generated
                     </h3>
                     
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center py-3 border-b border-slate-800">
-                        <span className="text-slate-300">{result.column1_Type} Coils ({result.column2_Size})</span>
-                        <span className="font-mono text-blue-400">₹{result.column3_UnitPrice} / unit</span>
+                        <div className="flex justify-between items-center py-3 border-b border-slate-800/80">
+                            <span className="text-slate-400 text-sm">Unit Price</span>
+                            <span className="font-mono text-blue-400 font-bold">₹{result.column3_UnitPrice}</span>
                         </div>
                         
-                        <div className="flex justify-between items-center py-3 border-b border-slate-800">
-                        <span className="text-slate-300">Material Cost ({result.calculation.holes} units)</span>
-                        <span className="font-mono text-white">₹{result.calculation.baseCost}</span>
+                        <div className="flex justify-between items-center py-3 border-b border-slate-800/80">
+                            <span className="text-slate-400 text-sm">Material Cost ({result.calculation.holes} units)</span>
+                            <span className="font-mono text-white">₹{result.calculation.baseCost}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-3">
-                        <span className="text-slate-300">Service Fee</span>
-                        <span className="font-mono text-white">₹{result.calculation.additionalCharges}</span>
+                            <span className="text-slate-400 text-sm">Service & Labour</span>
+                            <span className="font-mono text-white">₹{result.calculation.additionalCharges}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-8">
-                    <div className="bg-slate-800/50 rounded-xl p-4 mb-6 border border-slate-700">
+                <div className="mt-8 relative z-10">
+                    <div className="bg-slate-800/40 rounded-xl p-3 mb-6 border border-slate-700/50 backdrop-blur-sm">
                         <div className="flex items-start gap-3">
                             <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                             <p className="text-xs text-slate-400 leading-relaxed">
@@ -217,16 +255,17 @@ export default function CoilCalculator() {
 
                     <div className="flex justify-between items-end border-t border-slate-800 pt-6">
                         <span className="text-slate-400 text-sm font-medium">Estimated Total</span>
-                        <span className="text-5xl font-black text-white tracking-tight">
-                        <span className="text-2xl text-slate-500 font-normal mr-1">₹</span>
+                        <span className="text-4xl font-black text-white tracking-tight">
+                        <span className="text-xl text-slate-600 font-normal mr-1">₹</span>
                         {result.calculation.grandTotal.toLocaleString()}
                         </span>
                     </div>
                 </div>
             </>
           ) : (
-             <div className="flex items-center justify-center h-full text-slate-600 animate-pulse">
-                {availableSizes.length === 0 ? "Loading Inventory..." : "Calculating..."}
+             <div className="flex flex-col items-center justify-center h-full text-slate-600 space-y-3">
+                <div className="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                <span className="text-xs uppercase tracking-widest opacity-50">Calculating...</span>
              </div>
           )}
         </div>
