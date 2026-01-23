@@ -205,10 +205,10 @@ export default function CoilCalculator() {
                               <span className="font-mono text-white">₹{result.baseCost.toLocaleString()}</span>
                           </div>
 
-                          <div className="flex justify-between items-center py-3">
+                          {/* <div className="flex justify-between items-center py-3">
                               <span className="text-neutral-400 text-sm">Service & Labour</span>
                               <span className="font-mono text-green-500 text-xs font-bold bg-green-500/10 px-2 py-1 rounded">INCLUDED</span>
-                          </div>
+                          </div> */}
                       </div>
                   </div>
 
