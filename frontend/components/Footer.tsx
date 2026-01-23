@@ -55,21 +55,34 @@ export default function Footer() {
               <li className="flex gap-3">
                 <MapPin className="text-blue-500 shrink-0" size={20} />
                 <span className="text-slate-400">
-                  Industrial Area, Phase III,<br />
-                  Okhla, New Delhi, 110020
+                  Near Peppers Pizza,<br />
+                  Petrol-pump road,<br />
+                  Surajpur, Greater Noida,<br />
+                  Uttar Pradesh - 201306
                 </span>
               </li>
-              <li className="flex gap-3">
-                <Phone className="text-blue-500 shrink-0" size={20} />
-                <span className="text-slate-400">+91 9958764445</span>
-              </li>
-              <li className="flex gap-3">
-                <Mail className="text-blue-500 shrink-0" size={20} />
-                <span className="text-slate-400">contact@engg-solutions.com</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+             <li className="flex gap-3 items-center">
+            <Phone className="text-blue-500 shrink-0" size={20} />
+            <a 
+              href="tel:+919958764445" 
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              +91 9958764445
+            </a>
+          </li>
+          
+          <li className="flex gap-3 items-center">
+            <Mail className="text-blue-500 shrink-0" size={20} />
+            <a 
+              href="mailto:contact@engg-solutions.com" 
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              deveshdayalyadav@gmail.com
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
 
         {/* BOTTOM BAR */}
         <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">

@@ -2,12 +2,24 @@ import 'dotenv/config'; // Loads variables from .env automatically
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import authRoutes from './routes/auth.js';
+import auth from './middleware/authMiddleware.js'; //testing
+import priceRoutes from './routes/priceRoutes.js';
+
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:3000", // Your Frontend URL
+  credentials: true
+}));
+
+app.use('/api/prices', priceRoutes);
+
 
 // 1. Database Connection
 mongoose.connect(process.env.MONGO_URI)
@@ -107,13 +119,24 @@ app.put('/api/coils/:id', async (req, res) => {
     }
 });
 
+
 // DELETE a coil
 app.delete('/api/coils/:id', async (req, res) => {
     await Coil.findByIdAndDelete(req.params.id);
     res.json({ message: "Deleted" });
 });
 
+
+// Protected Route for Testing
+app.get('/api/test-protected', auth, (req, res) => {
+  res.json({ msg: "🎉 You are authorized! This is secret data." });
+});
+
 const PORT = process.env.PORT || 5000;
+
+app.use('/api/auth', authRoutes);
+
+
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

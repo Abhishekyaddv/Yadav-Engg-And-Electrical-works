@@ -1,8 +1,15 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, X, Edit3, Database, Package, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Save, X, Edit3, Database, Package, RefreshCw, Lock, LogOut } from 'lucide-react';
 
 export default function AdminPage() {
+  // --- AUTH STATE ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  // --- INVENTORY STATE ---
   const [coils, setCoils] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   
@@ -10,13 +17,53 @@ export default function AdminPage() {
   const [newCoil, setNewCoil] = useState({ type: 'New', size: '', unitPrice: '' });
   const [editForm, setEditForm] = useState({ size: '', unitPrice: '' });
 
-  // Load data
-  useEffect(() => { fetchCoils(); }, []);
+  // --- 1. INITIAL LOAD (Check for Key) ---
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      setIsLoggedIn(true);
+      fetchCoils(); // Load data immediately if logged in
+    }
+  }, []);
 
+  // --- 2. LOGIN LOGIC ---
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('adminToken', data.token); // Save the Key
+        setIsLoggedIn(true); // Unlock the page
+        fetchCoils(); // Load the inventory
+      } else {
+        setLoginError('Invalid Username or Password');
+      }
+    } catch (err) {
+      setLoginError('Server Error. Is the backend running?');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsLoggedIn(false);
+    setUsername('');
+    setPassword('');
+  };
+
+  // --- 3. INVENTORY LOGIC (Your existing code) ---
   const fetchCoils = async () => {
-    const res = await fetch('http://localhost:5000/api/coils');
-    const data = await res.json();
-    setCoils(data);
+    try {
+      const res = await fetch('http://localhost:5000/api/coils');
+      const data = await res.json();
+      setCoils(data);
+    } catch (err) { console.error("Failed to fetch coils", err); }
   };
 
   // Filter the data
@@ -26,9 +73,14 @@ export default function AdminPage() {
   // Handlers
   const handleAdd = async () => {
     if (!newCoil.size || !newCoil.unitPrice) return;
+    const token = localStorage.getItem('adminToken');
+    
     await fetch('http://localhost:5000/api/coils', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-auth-token': token || '' // Send the key for security
+      },
       body: JSON.stringify(newCoil)
     });
     setNewCoil({ type: 'New', size: '', unitPrice: '' }); 
@@ -37,7 +89,12 @@ export default function AdminPage() {
 
   const handleDelete = async (id: string) => {
     if(!confirm("Delete this size permanently?")) return;
-    await fetch(`http://localhost:5000/api/coils/${id}`, { method: 'DELETE' });
+    const token = localStorage.getItem('adminToken');
+    
+    await fetch(`http://localhost:5000/api/coils/${id}`, { 
+      method: 'DELETE',
+      headers: { 'x-auth-token': token || '' }
+    });
     fetchCoils();
   };
 
@@ -47,16 +104,21 @@ export default function AdminPage() {
   };
 
   const saveEdit = async (id: string) => {
+    const token = localStorage.getItem('adminToken');
+    
     await fetch(`http://localhost:5000/api/coils/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-auth-token': token || ''
+        },
         body: JSON.stringify(editForm)
     });
     setEditingId(null);
     fetchCoils();
   };
 
-  // Helper to render a row (Logic inlined to fix Focus Bug)
+  // Helper to render a row
   const renderRow = (item: any, colorClass: string) => (
     <tr key={item._id} className="hover:bg-slate-800/30 transition-colors group border-b border-slate-800/50 last:border-0">
       {editingId === item._id ? (
@@ -101,6 +163,48 @@ export default function AdminPage() {
     </tr>
   );
 
+  // --- 4. RENDER: LOGIN SCREEN (If not logged in) ---
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0B1120] text-white p-4 font-sans">
+        <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-sm shadow-2xl">
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-600/20 p-4 rounded-full text-blue-500">
+              <Lock size={32} />
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-center">Admin Access</h1>
+          <p className="text-slate-500 text-center text-sm mb-6">Enter credentials to manage inventory</p>
+          
+          {loginError && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded mb-4 text-center text-sm">{loginError}</div>}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+                <label className="text-xs text-slate-500 font-bold ml-1 mb-1 block">USERNAME</label>
+                <input 
+                type="text" 
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:border-blue-500 outline-none transition-colors"
+                value={username} onChange={e => setUsername(e.target.value)}
+                />
+            </div>
+            <div>
+                <label className="text-xs text-slate-500 font-bold ml-1 mb-1 block">PASSWORD</label>
+                <input 
+                type="password" 
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 focus:border-blue-500 outline-none transition-colors"
+                value={password} onChange={e => setPassword(e.target.value)}
+                />
+            </div>
+            <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 mt-2">
+              Unlock Portal
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // --- 5. RENDER: INVENTORY SCREEN (If logged in) ---
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-300 p-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -112,6 +216,12 @@ export default function AdminPage() {
                     <Database className="text-blue-500" /> Inventory Control
                 </h1>
             </div>
+            <button 
+                onClick={handleLogout} 
+                className="flex items-center gap-2 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 px-4 py-2 rounded-lg transition-colors text-sm font-semibold"
+            >
+                <LogOut size={16} /> Logout
+            </button>
         </div>
 
         {/* ADD NEW BAR */}

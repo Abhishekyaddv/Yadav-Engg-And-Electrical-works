@@ -1,20 +1,22 @@
 import React from 'react';
-import { Linkedin, Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
 
 const founders = [
   {
-    name: "Rajesh Kumar",
+    name: "Devesh Yadav",
     role: "Co-Founder & Technical Head",
-    exp: "20+",
-    bio: "Expert in heavy machinery refurbishment. Rajesh leads the technical team ensuring precision in every coil repair.",
-    image: "/api/placeholder/400/400" // Replace with real photo
+    exp: "10+",
+    phone: "+91 9958764445", // Replace with real number
+    bio: "Expert in heavy machinery refurbishment. Devesh leads the technical team ensuring precision in every coil repair.",
+    image: "/api/placeholder/400/400" 
   },
   {
-    name: "Amit Verma",
+    name: "Yamin Khan",
     role: "Co-Founder & Operations Lead",
-    exp: "15+",
-    bio: "Specialist in industrial logistics and client relations. Amit ensures your projects are delivered on time, every time.",
-    image: "/api/placeholder/400/400" // Replace with real photo
+    exp: "20+",
+    phone: "+91 8920835703", // Replace with real number
+    bio: "Specialist in industrial logistics and client relations. Yamin ensures your projects are delivered on time, every time.",
+    image: "/api/placeholder/400/400" 
   }
 ];
 
@@ -54,22 +56,26 @@ export default function FounderSection() {
                 </div>
 
                 {/* Info */}
-                <div className="text-center sm:text-left">
+                <div className="text-center sm:text-left flex-1">
                   <h4 className="text-2xl font-bold text-white mb-1">{founder.name}</h4>
                   <p className="text-blue-400 text-sm font-medium mb-3">{founder.role}</p>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                  <p className="text-slate-400 text-sm leading-relaxed mb-5">
                     {founder.bio}
                   </p>
                   
-                  {/* Social Icons */}
-                  <div className="flex justify-center sm:justify-start gap-3">
-                    <button className="p-2 bg-slate-900 rounded-lg text-slate-400 hover:text-white hover:bg-blue-600 transition-colors">
-                      <Linkedin size={18} />
-                    </button>
-                    <button className="p-2 bg-slate-900 rounded-lg text-slate-400 hover:text-white hover:bg-blue-600 transition-colors">
-                      <Mail size={18} />
-                    </button>
+                  {/* Clickable Phone Number Button */}
+                  <div className="flex justify-center sm:justify-start">
+                    <a 
+                      href={`tel:${founder.phone.replace(/\s/g, '')}`} 
+                      className="flex items-center gap-2 bg-slate-900 border border-slate-700 hover:bg-blue-600 hover:border-blue-500 hover:text-white text-slate-300 py-2 px-4 rounded-xl transition-all duration-300 group/btn"
+                    >
+                      <div className="bg-slate-800 p-1.5 rounded-full group-hover/btn:bg-white/20 transition-colors">
+                        <Phone size={14} />
+                      </div>
+                      <span className="font-mono font-bold text-sm">{founder.phone}</span>
+                    </a>
                   </div>
+
                 </div>
               </div>
             </div>

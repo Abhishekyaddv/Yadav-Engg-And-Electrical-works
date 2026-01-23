@@ -28,25 +28,23 @@ export default function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
           isScrolled 
             ? 'bg-slate-950/90 backdrop-blur-md border-blue-900/30 py-4 shadow-xl shadow-blue-900/10' 
-            : 'bg-slate-950 border-transparent py-6' // Changed transparent to bg-slate-950 to force dark mode visibility
+            : 'bg-slate-950 border-transparent py-6'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           
           {/* 1. LOGO AREA */}
           <Link href="/" className="flex items-center gap-3 group">
-            {/* The Icon Box with HARD GLOW Shadow */}
             <div className="relative bg-blue-600 p-2.5 rounded-xl border border-blue-400/50 transition-transform duration-300 group-hover:scale-105 shadow-[0_0_20px_rgba(37,99,235,0.6)]">
               <Wrench className="text-white h-5 w-5" />
             </div>
             
-            {/* Text Area */}
             <div className="flex flex-col leading-none">
               <span className="text-xl font-black text-white tracking-tighter drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                ENGINEERING
+                YADAV ENGINEERING
               </span>
               <span className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">
-                Solutions
+                And Electrical Works
               </span>
             </div>
           </Link>
@@ -65,20 +63,24 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* 3. CTA BUTTON */}
+          {/* 3. CTA BUTTON & PHONE */}
           <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-3 text-right">
-                <div className="bg-slate-900 p-2 rounded-full text-slate-400 border border-slate-800">
+            {/* CLICKABLE PHONE NUMBER */}
+            <a 
+              href="tel:+919876543210" 
+              className="flex items-center gap-3 text-right hover:opacity-80 transition-opacity group/phone"
+            >
+                <div className="bg-slate-900 p-2 rounded-full text-slate-400 border border-slate-800 group-hover/phone:text-blue-400 group-hover/phone:border-blue-500/30 transition-colors">
                     <PhoneCall size={16} />
                 </div>
                 <div className="flex flex-col">
-                    {/* <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Emergency 24/7</span> */}
-                    <span className="text-sm font-mono font-bold text-white tracking-tight">+91 98765 43210</span>
+                    <span className="text-sm font-mono font-bold text-white tracking-tight">+91 9958764445</span>
                 </div>
-            </div>
+            </a>
 
+            {/* SCROLL TO CALCULATOR BUTTON */}
             <Link 
-              href="/#contact"
+              href="/#calculator"
               className="group relative px-6 py-2.5 bg-white text-slate-950 rounded-full font-bold text-sm overflow-hidden hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-shadow"
             >
               <span className="relative flex items-center gap-2">
@@ -114,7 +116,7 @@ export default function Navbar() {
                 </Link>
             ))}
              <Link 
-              href="/#contact"
+              href="/#calculator"
               onClick={() => setIsMobileMenuOpen(false)}
               className="mt-6 w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-center active:scale-95 transition-transform shadow-[0_0_20px_rgba(37,99,235,0.5)]"
             >
