@@ -31,7 +31,7 @@ export default function AdminPage() {
     e.preventDefault();
     setLoginError('');
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -60,7 +60,7 @@ export default function AdminPage() {
   // --- 3. INVENTORY LOGIC (Your existing code) ---
   const fetchCoils = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/coils');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coils`);
       const data = await res.json();
       setCoils(data);
     } catch (err) { console.error("Failed to fetch coils", err); }
@@ -75,7 +75,7 @@ export default function AdminPage() {
     if (!newCoil.size || !newCoil.unitPrice) return;
     const token = localStorage.getItem('adminToken');
     
-    await fetch('http://localhost:5000/api/coils', {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coils`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export default function AdminPage() {
     if(!confirm("Delete this size permanently?")) return;
     const token = localStorage.getItem('adminToken');
     
-    await fetch(`http://localhost:5000/api/coils/${id}`, { 
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coils/${id}`, { 
       method: 'DELETE',
       headers: { 'x-auth-token': token || '' }
     });
@@ -105,8 +105,8 @@ export default function AdminPage() {
 
   const saveEdit = async (id: string) => {
     const token = localStorage.getItem('adminToken');
-    
-    await fetch(`http://localhost:5000/api/coils/${id}`, {
+
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coils/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

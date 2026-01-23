@@ -132,7 +132,9 @@ app.get('/api/test-protected', auth, (req, res) => {
   res.json({ msg: "🎉 You are authorized! This is secret data." });
 });
 
+// const PORT = process.env.PORT || 5000;
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 app.use('/api/auth', authRoutes);
 

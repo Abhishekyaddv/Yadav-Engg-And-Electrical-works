@@ -21,7 +21,7 @@ export default function CoilCalculator() {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/coils');
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coils`);
         const data = await res.json();
         setAllCoils(data);
       } catch (e) {
@@ -52,7 +52,7 @@ export default function CoilCalculator() {
     if (!formData.size) return; 
 
     try {
-      const response = await fetch('http://localhost:5000/api/calculate', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/calculate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

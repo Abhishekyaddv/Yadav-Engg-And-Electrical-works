@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   // 2. Fetch Data
   const fetchPrices = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/prices');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prices`);
       const data = await res.json();
       setItems(data);
     } catch (err) {
@@ -41,8 +41,8 @@ export default function AdminDashboard() {
     
     // Determine URL and Method based on mode
     const url = isEditing 
-      ? `http://localhost:5000/api/prices/${formData.id}` 
-      : 'http://localhost:5000/api/prices';
+      ? `${process.env.NEXT_PUBLIC_API_URL}/api/prices/${formData.id}` 
+      : `${process.env.NEXT_PUBLIC_API_URL}/api/prices`;
     
     const method = isEditing ? 'PUT' : 'POST';
 
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
     if(!confirm("Are you sure you want to delete this?")) return;
     const token = localStorage.getItem('adminToken');
     
-    await fetch(`http://localhost:5000/api/prices/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/prices/${id}`, {
       method: 'DELETE',
       headers: { 'x-auth-token': token || '' },
     });
